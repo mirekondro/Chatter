@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import type { Post } from "../types/post";
 
 const EXCERPT_LENGTH = 180;
@@ -11,7 +12,9 @@ function excerpt(body: string): string {
 export function PostCard({ post }: { post: Post }) {
     return (
         <article className="card">
-            <h2>{post.title}</h2>
+            <h2>
+                <Link to={`/posts/${post.id}`}>{post.title}</Link>
+            </h2>
             <p>{excerpt(post.body)}</p>
 
             {post.tags.length > 0 && (

@@ -1,4 +1,4 @@
-import type { PostsResponse } from "../types/post";
+import type { Post, PostsResponse } from "../types/post";
 
 const API_BASE = "https://dummyjson.com";
 
@@ -34,6 +34,18 @@ export async function fetchPosts({
     }
 
     return (await response.json()) as PostsResponse;
+}
+
+export async function fetchPost(id: number, signal?: AbortSignal): Promise<Post> {
+    const url = new URL(`/posts/${id}`, API_BASE);
+
+    const response = await fetch(url, { signal });
+
+    if (!response.ok) {
+        throw new ApiError(response.status, `Could not load post ${id} (${response.status})`);
+    }
+
+    return (await response.json()) as Post;
 }
 
 export function pageCount(total: number): number {

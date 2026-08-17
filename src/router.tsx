@@ -2,11 +2,16 @@ import { createBrowserRouter } from "react-router";
 import { RootLayout } from "./routes/root";
 import { RouteError } from "./routes/route-error";
 import { Feed, feedLoader } from "./routes/feed";
+import { PostPage, postLoader } from "./routes/post";
 
 export const router = createBrowserRouter([
     {
         path: "/",
         element: <RootLayout />,
         errorElement: <RouteError />,
-        children: [{ index: true, element: <Feed />, loader: feedLoader }],    },
+        children: [
+            { index: true, element: <Feed />, loader: feedLoader },
+            { path: "posts/:postId", element: <PostPage />, loader: postLoader },
+        ],
+    },
 ]);
