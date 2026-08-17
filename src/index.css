@@ -156,3 +156,19 @@ nav.pagination [aria-disabled="true"] {
     --cemphbg: #232833;
   }
 }
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.search input[type="search"] {
+  flex: 1;
+  margin: 0;
+}
+
+.search button {
+  margin: 0;
+}

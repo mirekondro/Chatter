@@ -1,32 +1,54 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import { fetchPosts, pageCount, parsePage } from "../api/posts";
 import type { PostsResponse } from "../types/post";
 import { PostCard } from "../components/post-card";
 import { Pagination } from "../components/pagination";
+import { SearchForm } from "../components/search-form";
+
+interface FeedData extends PostsResponse {
+    query: string;
+}
 
 export async function feedLoader({
                                      request,
-                                 }: LoaderFunctionArgs): Promise<PostsResponse> {
-    const page = parsePage(new URL(request.url).searchParams.get("page"));
-    return fetchPosts({ page, signal: request.signal });
+                                 }: LoaderFunctionArgs): Promise<FeedData> {
+    const params = new URL(request.url).searchParams;
+    const page = parsePage(params.get("page"));
+    const query = params.get("q")?.trim() ?? "";
+
+    const data = await fetchPosts({ page, query, signal: request.signal });
+
+    return { ...data, query };
 }
 
 export function Feed() {
-    const { posts, total, skip, limit } = useLoaderData<PostsResponse>();
+    const { posts, total, skip, limit, query } = useLoaderData<FeedData>();
 
     const currentPage = Math.floor(skip / limit) + 1;
     const totalPages = pageCount(total);
 
     return (
         <section className="feed">
+            <SearchForm />
+
             <div className="feed-header">
-                <h1>Feed</h1>
-                <p className="feed__count">{total.toLocaleString()} posts</p>
+                <h1>{query === "" ? "Feed" : `Results for “${query}”`}</h1>
+                <p>
+                    {total.toLocaleString()} {total === 1 ? "post" : "posts"}
+                </p>
             </div>
 
             {posts.length === 0 ? (
-                <p className="hint">Nothing here — try going back a page.</p>
+                <p className="hint">
+                    {query === "" ? (
+                        "Nothing here — try going back a page."
+                    ) : (
+                        <>
+                            No posts match “{query}”. <Link to="/">Back to the feed</Link>
+                        </>
+                    )}
+                </p>
             ) : (
                 <ul className="feed-list">
                     {posts.map((post) => (

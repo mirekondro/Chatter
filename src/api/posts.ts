@@ -16,14 +16,21 @@ export class ApiError extends Error {
 
 export interface FetchPostsOptions {
     page?: number;
+    query?: string;
     signal?: AbortSignal;
 }
 
 export async function fetchPosts({
                                      page = 1,
+                                     query = "",
                                      signal,
                                  }: FetchPostsOptions = {}): Promise<PostsResponse> {
-    const url = new URL("/posts", API_BASE);
+    const trimmed = query.trim();
+    const url = new URL(trimmed ? "/posts/search" : "/posts", API_BASE);
+
+    if (trimmed) {
+        url.searchParams.set("q", trimmed);
+    }
     url.searchParams.set("limit", String(POSTS_PER_PAGE));
     url.searchParams.set("skip", String((page - 1) * POSTS_PER_PAGE));
 

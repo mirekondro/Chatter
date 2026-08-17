@@ -1,16 +1,27 @@
-import { Link, useNavigation } from "react-router";
+import { Link, useNavigation, useSearchParams } from "react-router";
 
 interface PaginationProps {
     currentPage: number;
     totalPages: number;
 }
 
-function hrefForPage(page: number): string {
-    return page <= 1 ? "/" : `/?page=${page}`;
-}
-
 export function Pagination({ currentPage, totalPages }: PaginationProps) {
+    const [searchParams] = useSearchParams();
     const isBusy = useNavigation().state === "loading";
+
+    function hrefForPage(page: number): string {
+        const params = new URLSearchParams(searchParams);
+
+        if (page <= 1) {
+            params.delete("page");
+        } else {
+            params.set("page", String(page));
+        }
+
+        const queryString = params.toString();
+        return queryString === "" ? "/" : `/?${queryString}`;
+    }
+
     const hasPrevious = currentPage > 1;
     const hasNext = currentPage < totalPages;
 
