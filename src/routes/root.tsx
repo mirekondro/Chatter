@@ -9,6 +9,10 @@ export function RootLayout() {
                 <Link to="/" className="brand">
                     Chatter
                 </Link>
+                <nav className="site-nav">
+                    <Link to="/">Feed</Link>
+                    <Link to="/my-page">My Page</Link>
+                </nav>
                 <span className="status" aria-live="polite">
           {isNavigating ? "Loading…" : ""}
         </span>
