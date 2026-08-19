@@ -209,3 +209,14 @@ nav.pagination [aria-disabled="true"] {
 .search button {
   margin: 0;
 }
+
+.meta button {
+  margin: 0;
+  padding: 0.05rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+.meta > :last-child {
+  margin-left: auto;
+}
+

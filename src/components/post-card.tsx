@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Post } from "../types/post";
+import { useUserPosts } from "../context/user-posts-context";
 
 const EXCERPT_LENGTH = 180;
 
@@ -10,7 +11,11 @@ function excerpt(body: string): string {
 }
 
 export function PostCard({ post }: { post: Post }) {
+    // Only locally-created posts (negative ids) can be deleted. dummyjson's
+    // DELETE is simulated — it answers 200 but never removes anything — so a
+    // delete button on an API post would be a button that lies.
     const isLocal = post.id < 0;
+    const { removeUserPost } = useUserPosts();
 
     return (
         <article className="card">
@@ -36,6 +41,12 @@ export function PostCard({ post }: { post: Post }) {
                 <span>▲ {post.reactions.likes}</span>
                 <span>▼ {post.reactions.dislikes}</span>
                 <span>{post.views.toLocaleString()} views</span>
+
+                {isLocal && (
+                    <button type="button" onClick={() => removeUserPost(post.id)}>
+                        Delete
+                    </button>
+                )}
             </footer>
         </article>
     );
