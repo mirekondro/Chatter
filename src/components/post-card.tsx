@@ -10,10 +10,17 @@ function excerpt(body: string): string {
 }
 
 export function PostCard({ post }: { post: Post }) {
+    const isLocal = post.id < 0;
+
     return (
         <article className="card">
             <h2>
-                <Link to={`/posts/${post.id}`}>{post.title}</Link>
+                {isLocal ? (
+                    post.title
+                ) : (
+                    <Link to={`/posts/${post.id}`}>{post.title}</Link>
+                )}
+                {isLocal && <span className="badge">Your post</span>}
             </h2>
             <p>{excerpt(post.body)}</p>
 

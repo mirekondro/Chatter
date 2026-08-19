@@ -21,6 +21,37 @@
   font-size: 0.9rem;
 }
 
+.post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 32rem;
+  margin-bottom: 2rem;
+}
+
+.post-form label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.post-form button {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  vertical-align: middle;
+  background: var(--cemphbg);
+  color: var(--cemph);
+}
+
 .status {
   font-size: 0.85rem;
   color: var(--cmed);

@@ -5,6 +5,7 @@ import type { PostsResponse } from "../types/post";
 import { PostCard } from "../components/post-card";
 import { Pagination } from "../components/pagination";
 import { SearchForm } from "../components/search-form";
+import { useUserPosts } from "../context/user-posts-context";
 
 interface FeedData extends PostsResponse {
     query: string;
@@ -24,9 +25,28 @@ export async function feedLoader({
 
 export function Feed() {
     const { posts, total, skip, limit, query } = useLoaderData<FeedData>();
+    const { userPosts } = useUserPosts();
 
     const currentPage = Math.floor(skip / limit) + 1;
     const totalPages = pageCount(total);
+
+    // Locally-created posts aren't paginated on a real backend, so they're
+    // only pinned to the top of page 1 — and filtered by the search query
+    // like everything else, so search still feels consistent.
+    const matchingUserPosts =
+        currentPage === 1
+            ? userPosts.filter((post) => {
+                  if (query === "") return true;
+                  const needle = query.toLowerCase();
+                  return (
+                      post.title.toLowerCase().includes(needle) ||
+                      post.body.toLowerCase().includes(needle)
+                  );
+              })
+            : [];
+
+    const allPosts = [...matchingUserPosts, ...posts];
+    const displayedTotal = total + matchingUserPosts.length;
 
     return (
         <section className="feed">
@@ -35,11 +55,11 @@ export function Feed() {
             <div className="feed-header">
                 <h1>{query === "" ? "Feed" : `Results for “${query}”`}</h1>
                 <p>
-                    {total.toLocaleString()} {total === 1 ? "post" : "posts"}
+                    {displayedTotal.toLocaleString()} {displayedTotal === 1 ? "post" : "posts"}
                 </p>
             </div>
 
-            {posts.length === 0 ? (
+            {allPosts.length === 0 ? (
                 <p className="hint">
                     {query === "" ? (
                         "Nothing here — try going back a page."
@@ -51,7 +71,7 @@ export function Feed() {
                 </p>
             ) : (
                 <ul className="feed-list">
-                    {posts.map((post) => (
+                    {allPosts.map((post) => (
                         <li key={post.id}>
                             <PostCard post={post} />
                         </li>
