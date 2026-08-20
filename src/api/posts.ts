@@ -21,10 +21,10 @@ export interface FetchPostsOptions {
 }
 
 export async function fetchPosts({
-                                     page = 1,
-                                     query = "",
-                                     signal,
-                                 }: FetchPostsOptions = {}): Promise<PostsResponse> {
+    page = 1,
+    query = "",
+    signal,
+}: FetchPostsOptions = {}): Promise<PostsResponse> {
     const trimmed = query.trim();
     const url = new URL(trimmed ? "/posts/search" : "/posts", API_BASE);
 
@@ -63,8 +63,3 @@ export function parsePage(raw: string | null): number {
     const page = Number(raw);
     return Number.isInteger(page) && page > 0 ? page : 1;
 }
-
-// Note: there is deliberately no deletePost() here. dummyjson's
-// DELETE /posts/{id} is simulated — it answers 200 with `isDeleted: true`
-// and the post is still there on the next fetch — so only locally-created
-// posts are deletable, and that happens in UserPostsProvider.

@@ -17,9 +17,6 @@ const UserPostsContext = createContext<UserPostsContextValue | null>(null);
 
 export function UserPostsProvider({ children }: { children: ReactNode }) {
     const [userPosts, setUserPosts] = useState<Post[]>([]);
-    // Local posts use negative ids so they can never collide with a
-    // dummyjson id — see PostCard, which uses the sign to decide whether a
-    // delete goes to the API or stays in memory.
     const nextId = useRef(-1);
 
     const addUserPost = ({ title, body }: NewPostInput) => {

@@ -1,13 +1,32 @@
-import { Link, useNavigation, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 
 interface PaginationProps {
     currentPage: number;
     totalPages: number;
 }
 
+function pageWindow(current: number, total: number): (number | "gap")[] {
+    const wanted = [1, total, current - 1, current, current + 1];
+    const pages = [...new Set(wanted)]
+        .filter((page) => page >= 1 && page <= total)
+        .sort((a, b) => a - b);
+
+    const entries: (number | "gap")[] = [];
+    let previous = 0;
+
+    for (const page of pages) {
+        if (previous !== 0 && page - previous > 1) {
+            entries.push("gap");
+        }
+        entries.push(page);
+        previous = page;
+    }
+
+    return entries;
+}
+
 export function Pagination({ currentPage, totalPages }: PaginationProps) {
     const [searchParams] = useSearchParams();
-    const isBusy = useNavigation().state === "loading";
 
     function hrefForPage(page: number): string {
         const params = new URLSearchParams(searchParams);
@@ -22,33 +41,54 @@ export function Pagination({ currentPage, totalPages }: PaginationProps) {
         return queryString === "" ? "/" : `/?${queryString}`;
     }
 
+    if (totalPages <= 1) {
+        return null;
+    }
+
     const hasPrevious = currentPage > 1;
     const hasNext = currentPage < totalPages;
 
     return (
         <nav className="pagination" aria-label="Feed pages">
             {hasPrevious ? (
-                <Link className="button" to={hrefForPage(currentPage - 1)} rel="prev">
+                <Link className="page-link" to={hrefForPage(currentPage - 1)} rel="prev">
                     ← Previous
                 </Link>
             ) : (
-                <span className="button button--disabled" aria-disabled="true">
-          ← Previous
-        </span>
+                <span className="page-link is-disabled" aria-disabled="true">
+                    ← Previous
+                </span>
             )}
 
-            <span className="pagination__status" aria-live="polite">
-        {isBusy ? "Loading…" : `Page ${currentPage} of ${totalPages}`}
-      </span>
+            <ul className="page-numbers">
+                {pageWindow(currentPage, totalPages).map((entry, index) =>
+                    entry === "gap" ? (
+                        <li key={`gap-${index}`} className="page-gap" aria-hidden="true">
+                            …
+                        </li>
+                    ) : (
+                        <li key={entry}>
+                            <Link
+                                className="page-link"
+                                to={hrefForPage(entry)}
+                                aria-label={`Page ${entry}`}
+                                aria-current={entry === currentPage ? "page" : undefined}
+                            >
+                                {entry}
+                            </Link>
+                        </li>
+                    ),
+                )}
+            </ul>
 
             {hasNext ? (
-                <Link className="button" to={hrefForPage(currentPage + 1)} rel="next">
+                <Link className="page-link" to={hrefForPage(currentPage + 1)} rel="next">
                     Next →
                 </Link>
             ) : (
-                <span className="button button--disabled" aria-disabled="true">
-          Next →
-        </span>
+                <span className="page-link is-disabled" aria-disabled="true">
+                    Next →
+                </span>
             )}
         </nav>
     );
