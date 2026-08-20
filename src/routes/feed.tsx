@@ -12,8 +12,8 @@ interface FeedData extends PostsResponse {
 }
 
 export async function feedLoader({
-                                     request,
-                                 }: LoaderFunctionArgs): Promise<FeedData> {
+    request,
+}: LoaderFunctionArgs): Promise<FeedData> {
     const params = new URL(request.url).searchParams;
     const page = parsePage(params.get("page"));
     const query = params.get("q")?.trim() ?? "";
@@ -30,9 +30,6 @@ export function Feed() {
     const currentPage = Math.floor(skip / limit) + 1;
     const totalPages = pageCount(total);
 
-    // Locally-created posts aren't paginated on a real backend, so they're
-    // only pinned to the top of page 1 — and filtered by the search query
-    // like everything else, so search still feels consistent.
     const matchingUserPosts =
         currentPage === 1
             ? userPosts.filter((post) => {
@@ -54,8 +51,9 @@ export function Feed() {
 
             <div className="feed-header">
                 <h1>{query === "" ? "Feed" : `Results for “${query}”`}</h1>
-                <p>
-                    {displayedTotal.toLocaleString()} {displayedTotal === 1 ? "post" : "posts"}
+                <p className="feed-count">
+                    {displayedTotal.toLocaleString()}{" "}
+                    {displayedTotal === 1 ? "post" : "posts"}
                 </p>
             </div>
 

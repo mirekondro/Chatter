@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import type { Post } from "../types/post";
 import { useUserPosts } from "../context/user-posts-context";
 
@@ -11,36 +11,43 @@ function excerpt(body: string): string {
 }
 
 export function PostCard({ post }: { post: Post }) {
-    // Only locally-created posts (negative ids) can be deleted. dummyjson's
-    // DELETE is simulated — it answers 200 but never removes anything — so a
-    // delete button on an API post would be a button that lies.
     const isLocal = post.id < 0;
     const { removeUserPost } = useUserPosts();
+    const location = useLocation();
 
     return (
         <article className="card">
-            <h2>
+            <h2 className="card__title">
                 {isLocal ? (
                     post.title
                 ) : (
-                    <Link to={`/posts/${post.id}`}>{post.title}</Link>
+                    <Link
+                        className="card__link"
+                        to={`/posts/${post.id}`}
+                        state={{ from: location.search }}
+                    >
+                        {post.title}
+                    </Link>
                 )}
                 {isLocal && <span className="badge">Your post</span>}
             </h2>
-            <p>{excerpt(post.body)}</p>
+
+            <p className="card__excerpt">{excerpt(post.body)}</p>
 
             {post.tags.length > 0 && (
                 <ul className="tags">
                     {post.tags.map((tag) => (
-                        <li key={tag}>#{tag}</li>
+                        <li key={tag}>
+                            <Link to={`/?q=${encodeURIComponent(tag)}`}>#{tag}</Link>
+                        </li>
                     ))}
                 </ul>
             )}
 
             <footer className="meta">
-                <span>▲ {post.reactions.likes}</span>
-                <span>▼ {post.reactions.dislikes}</span>
-                <span>{post.views.toLocaleString()} views</span>
+                <span title="Likes">▲ {post.reactions.likes}</span>
+                <span title="Dislikes">▼ {post.reactions.dislikes}</span>
+                <span title="Views">{post.views.toLocaleString()} views</span>
 
                 {isLocal && (
                     <button type="button" onClick={() => removeUserPost(post.id)}>

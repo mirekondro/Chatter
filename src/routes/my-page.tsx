@@ -25,7 +25,12 @@ export function MyPage() {
 
     return (
         <section className="my-page">
-            <h1>My Page</h1>
+            <div className="feed-header">
+                <h1>My Page</h1>
+                <p className="feed-count">
+                    {userPosts.length} {userPosts.length === 1 ? "post" : "posts"}
+                </p>
+            </div>
 
             <form className="post-form" onSubmit={handleSubmit}>
                 <label htmlFor="post-title">Title</label>
@@ -54,7 +59,9 @@ export function MyPage() {
             <h2>Your posts</h2>
 
             {userPosts.length === 0 ? (
-                <p className="hint">You haven't posted anything yet — write your first post above.</p>
+                <p className="hint">
+                    You haven't posted anything yet — write your first post above.
+                </p>
             ) : (
                 <ul className="feed-list">
                     {userPosts.map((post) => (
