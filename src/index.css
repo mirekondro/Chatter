@@ -1,4 +1,7 @@
-:root {
+:root,
+html,
+html[data-theme="light"],
+html[data-theme="dark"] {
   color-scheme: dark;
 
   --width: 62rem;
@@ -38,6 +41,11 @@
   --shadow-md: 0 6px 20px rgb(0 0 0 / 0.45);
 
   --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+html {
+  background: var(--cbg);
+  color: var(--cfg);
 }
 
 body {
@@ -719,4 +727,29 @@ main[aria-busy="true"] .post {
   article.card:hover {
     transform: none;
   }
+}
+
+.site-header nav.site-nav {
+  position: static;
+  width: auto;
+  margin: 0 0 0 auto;
+  box-shadow: none;
+}
+
+nav.pagination ul.page-numbers > li {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.meta,
+.comment__meta {
+  width: auto;
+  margin: 0;
+}
+
+.post .tags,
+.card .tags {
+  width: auto;
+  margin: 0;
 }
